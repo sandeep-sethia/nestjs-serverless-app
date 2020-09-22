@@ -8,6 +8,6 @@ export class InfoController {
 
     @Get('/')
     async getServiceInfo() {
-        return this.infoService.getInfo();
+        return await this.infoService.getInfo();
     }
 }
