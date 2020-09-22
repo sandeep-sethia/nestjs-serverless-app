@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity'
@@ -27,7 +27,30 @@ export class UsersService {
         user.org_id = 1;
         user.name = userDto.name;
         user.email = userDto.email;
+        return await this.userRepository.save(user);
+    }
 
+    async updateUser(email: string, name: string, orgId: number): Promise<User> {
+        if(orgId ===null && name === null) {
+            throw new BadRequestException(
+                'both orgId and name can not be null',
+              );
+        }
+        let user: User = await this.userRepository.findOne({
+            email: email
+        })
+        if(null === user) {
+            throw new BadRequestException(
+                'no such user exist',
+              );            
+        }
+        if(orgId) {
+            user.org_id = orgId;
+        }
+        if(name) {
+            user.name = name;
+        }
+        user.updated_at = new Date();
         return await this.userRepository.save(user);
     }
 }
